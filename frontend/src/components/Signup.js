@@ -1,28 +1,70 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { Image, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, View, Text } from 'react-native';
+import { Formik } from 'formik';
+ import * as Yup from 'yup';
 import Checkbox from "expo-checkbox"; 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+const API_URL='http://192.168.1.5:5000/api/users/signup';
+
+
+  // Schéma de validation avec Yup
+  const SignupSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(3, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Required'),
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Required'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .required('Required'),
+    terms: Yup.boolean()
+      .oneOf([true], 'You must accept the terms')
+  });
+
 
 export default function Signup({ navigation }) {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [isChecked, setIsChecked] = useState(false);
   const [secureText, setSecureText] = useState(true);
 
-  const handleSignUp = () => {
-    if (!form.name || !form.email || !form.password || !isChecked) {
-      alert("Veuillez remplir tous les champs et accepter les conditions.");
-      return;
+  const handleSignUp = async (values) => {
+
+    try {
+      const response = await fetch(API_URL, {  
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Échec de l'inscription");
+      }
+
+      alert("Succès", "Compte créé avec succès !");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error('Erreur:', error);
+      Alert.alert("Erreur", error.message || "Une erreur est survenue lors de l'inscription");
     }
-    alert("Compte créé avec succès !");
-    navigation.navigate("Login"); // Rediriger vers la page Login
   };
 
   return (
     <View style={styles.container}>
+     <Formik
+        initialValues={{ name: '', email: '', password: '', terms: false }}
+        validationSchema={SignupSchema}
+        onSubmit={handleSignUp}>
+    {({ handleChange, handleBlur, handleSubmit, values, errors, touched,setFieldValue  }) => (
+      <View>
       <Image
         style={styles.image}
         source={require('../../assets/signup_image.png')}
@@ -30,43 +72,68 @@ export default function Signup({ navigation }) {
       <Text style={styles.text}>Welcome <Text style={{ color: "#6495ED" }}>OnBoard!</Text></Text>
       <Text style={styles.label}>Username</Text>
       <TextInput 
-        value={form.name}  
-        onChangeText={name => setForm({ ...form, name })} 
-        style={styles.input}  
+        value={values.name}  
+        onChangeText={handleChange('name')} 
+        onBlur={handleBlur('name')}
+        style={[styles.input,errors.name && touched.name ? styles.inputError : null]}  
         placeholder="Enter your username"
       />
+       {errors.name && touched.name && (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            )}
       <Text style={styles.label}>Email</Text>
-      <TextInput 
-        value={form.email} 
-        onChangeText={email => setForm({ ...form, email })}
-        style={styles.input}  
-        placeholder="Enter your email"
-        keyboardType="email-address"
-      />
-      <Text style={styles.label}>Password</Text>
-      <View style={styles.passwordContainer}>
-        <TextInput
-          onChangeText={password => setForm({ ...form, password })}
-          value={form.password}
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          secureTextEntry={secureText}
-          style={ { flex: 1 }}
-          placeholder="Enter your password"
-        />
+            <TextInput
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              style={[
+                styles.input, 
+                errors.email && touched.email ? styles.inputError : null
+              ]}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            {errors.email && touched.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+
+            <Text style={styles.label}>Password</Text>
+            <View style={[
+              styles.passwordContainer,
+              errors.password && touched.password ? styles.inputError : null
+            ]}>
+              <TextInput
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                secureTextEntry={secureText}
+                style={{ flex: 1 }}
+                placeholder="Enter your password"
+                autoCapitalize="none"
+              />
         <TouchableOpacity onPress={() => setSecureText(!secureText)}>
           <Icon name={secureText ? "eye-off" : "eye"} size={20} color="#6495ED" />
         </TouchableOpacity>
       </View>
-      <View style={styles.checkboxContainer}>
-        <Checkbox 
-          value={isChecked} 
-          onValueChange={setIsChecked} 
-          color={isChecked ? "#6495ED" : undefined} 
-        />
-        <Text style={styles.checkboxText}>I accept the terms & Condition</Text>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      {errors.password && touched.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+        <View style={styles.checkboxContainer}>
+              <Checkbox
+                value={values.terms}
+                onValueChange={(value) => {
+                  // Utilisez setFieldValue pour les champs non-textuels
+                  setFieldValue('terms', value);
+                }}
+                color={values.terms ? "#6495ED" : undefined}
+              />
+              <Text style={styles.checkboxText}>I accept the terms & Condition</Text>
+            </View>
+            {errors.terms && touched.terms && (
+              <Text style={styles.errorText}>{errors.terms}</Text>
+            )}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>SIGN UP</Text>
       </TouchableOpacity>
 
@@ -74,6 +141,9 @@ export default function Signup({ navigation }) {
       <Text style={styles.footerText}>
         Own an Account? <Text style={styles.linkText} onPress={() => navigation.navigate("Login")}>JUMP RIGHT IN</Text>
       </Text>
+      </View>
+    )}
+      </Formik>
     </View>
   );
 }
@@ -81,13 +151,13 @@ export default function Signup({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20, // Ajout d'un padding global pour les éléments à l'intérieur du conteneur
+    padding: 40, // Ajout d'un padding global pour les éléments à l'intérieur du conteneur
     backgroundColor: '#fff',
     justifyContent: 'center', // Centrer les éléments verticalement
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
     resizeMode: 'contain',
     alignSelf: 'center', // Centrer l'image horizontalement
     marginBottom: 20, // Espacement sous l'image
@@ -109,6 +179,9 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginBottom: 15, // Augmenter l'espacement entre les champs
+  },
+  inputError: {
+    borderColor: 'red',
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -146,5 +219,11 @@ const styles = StyleSheet.create({
   linkText: {
     color: "#6495ED",
     fontWeight: "bold",
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 5,
   },
 });
