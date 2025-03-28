@@ -20,15 +20,19 @@ const SignIn = () => {
       });
   
       const data = await response.json();
+  
       if (response.ok) {
-        Alert.alert('Success', `Welcome, ${data.user.email}`);
+        // Assuming your backend returns a token when successful
+        Alert.alert('Success', `Welcome, ${data.token ? 'you are logged in!' : ''}`);
+        // You can now store the token for future API calls
       } else {
-        Alert.alert('Error', data.msg);
+        Alert.alert('Error', data.message || 'Login failed');
       }
     } catch (error) {
       Alert.alert('Error', 'Something went wrong');
     }
   };
+  
   
   const togglePasswordVisibility = () => {
     setSecureText(!secureText);
