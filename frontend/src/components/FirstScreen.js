@@ -12,11 +12,9 @@ const FirstScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Background Shapes */}
       <View style={styles.topShape} />
       <View style={styles.bottomShape} />
 
-      {/* Logo & Text */}
       <View style={styles.content}>
         <Image
           source={require("../../assets/logo.png")} // ton image de cerveau
