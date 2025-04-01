@@ -4,16 +4,22 @@ import Signup from './src/components/Signup';
 import Login from './src/components/Login';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import FirstScreen from './src/components/FirstScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     // <SafeAreaView style={styles.container}>
-    //   <Signup />
+    //   <FirstScreen />
     // </SafeAreaView>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Signup">
+    <Stack.Navigator initialRouteName="FirstScreen">
+    <Stack.Screen 
+        name="FirstScreen" 
+        component={FirstScreen}
+        options={{ headerShown: false }} // Cache l'en-tête si besoin
+      />
       <Stack.Screen 
         name="Signup" 
         component={Signup}

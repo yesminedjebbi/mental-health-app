@@ -151,22 +151,22 @@ export default function Signup({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 40, // Ajout d'un padding global pour les éléments à l'intérieur du conteneur
+    padding: 40, 
     backgroundColor: '#fff',
-    justifyContent: 'center', // Centrer les éléments verticalement
+    justifyContent: 'center', 
   },
   image: {
     width: 250,
     height: 250,
     resizeMode: 'contain',
-    alignSelf: 'center', // Centrer l'image horizontalement
-    marginBottom: 20, // Espacement sous l'image
+    alignSelf: 'center', 
+    marginBottom: 20, 
   },
   text: {
     fontFamily: "Comfortaa",
     fontSize: 24,
-    textAlign: 'center', // Centrer le texte
-    marginBottom: 20, // Ajouter un peu d'espace après le texte
+    textAlign: 'center', 
+    marginBottom: 20, 
   },
   label: {
     fontSize: 14,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     padding: 12,
     borderRadius: 10,
-    marginBottom: 15, // Augmenter l'espacement entre les champs
+    marginBottom: 15, 
   },
   inputError: {
     borderColor: 'red',
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20, // Espacement entre la case à cocher et le bouton
+    marginBottom: 20, 
   },
   checkboxText: {
     marginLeft: 10,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 20, // Espacement après le bouton
+    marginBottom: 20, 
   },
   buttonText: {
     color: "#fff",
