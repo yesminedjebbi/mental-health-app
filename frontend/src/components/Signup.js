@@ -28,6 +28,22 @@ const API_URL='http://192.168.1.5:5000/api/users/signup';
 export default function Signup({ navigation }) {
   const [secureText, setSecureText] = useState(true);
 
+  const createQuiz = async (userId) => {
+    try {
+      const response = await fetch('http://192.168.1.5:5000/api/quiz/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+  
+      const data = await response.json();
+    } catch (error) {
+      console.error("Erreur réseau :", error);
+    }
+  };
+
   const handleSignUp = async (values) => {
 
     try {
@@ -44,6 +60,9 @@ export default function Signup({ navigation }) {
       });
 
       const data = await response.json();
+     console.log("Réponse backend:", data);
+      createQuiz(data.newUser._id);
+
 
       if (!response.ok) {
         throw new Error(data.message || "Échec de l'inscription");
@@ -53,8 +72,10 @@ export default function Signup({ navigation }) {
       navigation.navigate("Login");
     } catch (error) {
       console.error('Erreur:', error);
-      Alert.alert("Erreur", error.message || "Une erreur est survenue lors de l'inscription");
+      alert("Erreur", error.message || "Une erreur est survenue lors de l'inscription");
     }
+
+
   };
 
   return (

@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get("window");
 const FirstScreen = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate("Signup"); // redirige vers la page principale après 2.5s
+      navigation.navigate("Login"); // redirige vers la page principale après 2.5s
     }, 2500);
   }, []);
 

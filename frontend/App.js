@@ -5,13 +5,14 @@ import Login from './src/components/Login';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import FirstScreen from './src/components/FirstScreen';
+import Quiz from './src/components/quizPage';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     // <SafeAreaView style={styles.container}>
-    //   <FirstScreen />
+    //   <Quiz userId={'67e5278eedc94d92e0ccffa2'} />
     // </SafeAreaView>
     <NavigationContainer>
     <Stack.Navigator initialRouteName="FirstScreen">
@@ -28,8 +29,13 @@ export default function App() {
       <Stack.Screen 
         name="Login" 
         component={Login} 
-        options={{ title: 'Login' }} // Personnalise le titre
+        options={{  headerShown: false }} // Personnalise le titre
       />
+      <Stack.Screen 
+          name="Quiz" 
+          component={Quiz} 
+          options={{ headerShown: false }} 
+        />
     </Stack.Navigator>
   </NavigationContainer>
   );
