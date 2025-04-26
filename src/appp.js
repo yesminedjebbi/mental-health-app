@@ -1,31 +1,30 @@
+
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, View } from 'react-native';
-import ProfilePictureSelector from './src/choosepic'; // Import ProfilePictureSelector
-import ProfilePage from './src/profile'; 
+import { SafeAreaView, Text, StyleSheet } from 'react-native';
+import Chatbot from './src/chatbot';
 
-const Stack = createStackNavigator();
-
-
-
-export default function App() {
+const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="ProfilePictureSelector">
-        <Stack.Screen name="ProfilePictureSelector" component={ProfilePictureSelector} options={{ headerShown: false }} />
-        <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}></Text>
+      <Chatbot />
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 50,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color:'black',
   },
 });
+
+export default App;

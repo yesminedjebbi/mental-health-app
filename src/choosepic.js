@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import axios from 'axios';
-import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
-import { useNavigation } from '@react-navigation/native'; // Importer useNavigation
+import { useNavigation } from '@react-navigation/native';
 
 const ProfilePictureSelector = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const navigation = useNavigation(); // Créer une instance de navigation
+  const navigation = useNavigation();
 
   const imageList = [
     { id: 1, file: require('../assets/profile.jpg'), name: 'profile1.jpg' },
@@ -25,58 +23,45 @@ const ProfilePictureSelector = () => {
 
   const handleNext = async () => {
     if (!selectedImage) {
-      Alert.alert('Erreur', 'Veuillez sélectionner une photo de profil');
+      Alert.alert('Error', 'Please choose a picture for your profile');
       return;
     }
 
     try {
-      const asset = Asset.fromModule(selectedImage.file);
-      await asset.downloadAsync();
-
-      const fileUri = asset.localUri || asset.uri;
-
-      const formData = new FormData();
-      formData.append('profilePicture', {
-        uri: fileUri,
-        type: 'image/jpeg',
-        name: selectedImage.name,
-      });
-      formData.append('_id', '67e5cc1d674becc4c1004208');
-
-      const response = await axios.post('http://192.168.1.169:5000/uploadProfilePicture', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await axios.post('http://192.168.1.174:5000/api/updateProfilePicture', {
+        _id: '67e5cc1d674becc4c1004208',
+        profilePicture: selectedImage.name, // Envoie juste le nom du fichier
       });
 
       if (response.data.message) {
-        Alert.alert('Succès', 'Photo de profil mise à jour !');
-        // Rediriger l'utilisateur vers la page de profil après un upload réussi
-        navigation.navigate('ProfilePage', { imageUrl: fileUri }); // Passer l'image à la page de profil
+        Alert.alert('Success', 'Profile picture updated!');
+        navigation.navigate('ProfilePage', { 
+          imageUrl: selectedImage.name, // ✅ correction ici
+          imageFile: selectedImage.file 
+        });
       } else {
-        Alert.alert('Erreur', 'Échec de l’envoi de la photo.');
+        Alert.alert('Error', 'Failure sending the picture');
       }
     } catch (error) {
-      console.error('Erreur lors de l’envoi :', error);
-      Alert.alert('Erreur', 'Une erreur est survenue.');
+      console.error('Failure sending:', error);
+      Alert.alert('Error', 'Error has been detected');
     }
   };
 
   const handleBack = () => {
-    console.log('Back button pressed');
-    navigation.goBack(); // Retour à la page précédente
+    navigation.goBack();
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.headerText}>Choisissez votre photo de profil</Text>
+      <Text style={styles.headerText}>Choose your profile picture</Text>
 
       <View style={styles.profilePictureContainer}>
-        <Text style={styles.selectedText}>Image sélectionnée :</Text>
+        <Text style={styles.selectedText}>Selected image:</Text>
         {selectedImage ? (
           <Image source={selectedImage.file} style={styles.selectedProfileImage} />
         ) : (
-          <Text style={styles.placeholderText}>Aucune sélection</Text>
+          <Text style={styles.placeholderText}>No selection</Text>
         )}
       </View>
 
@@ -97,10 +82,10 @@ const ProfilePictureSelector = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Retour</Text>
+          <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>Suivant</Text>
+          <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -109,7 +94,7 @@ const ProfilePictureSelector = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',

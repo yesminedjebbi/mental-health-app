@@ -11,15 +11,19 @@ import {
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+
 
 const { width } = Dimensions.get('window');
 
 const ProfilePage = () => {
   const route = useRoute();
+  const navigation = useNavigation();
+
   const [profileImage, setProfileImage] = useState(null);
   const [notificationCount, setNotificationCount] = useState(3);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const slideAnim = useState(new Animated.Value(-250))[0]; // For side menu
+  const slideAnim = useState(new Animated.Value(-250))[0];
 
   useEffect(() => {
     if (route.params?.imageUrl) {
@@ -41,6 +45,25 @@ const ProfilePage = () => {
         duration: 300,
         useNativeDriver: true,
       }).start();
+    }
+  };
+
+  const getLocalImage = (imageName) => {
+    switch (imageName) {
+      case 'profile.jpg':
+        return require('../assets/profile.jpg');
+      case 'profile2.jpg':
+        return require('../assets/profile2.jpg');
+      case 'profile3.jpg':
+        return require('../assets/profile3.jpg');
+      case 'profile4.jpg':
+        return require('../assets/profile4.jpg');
+      case 'profile5.jpg':
+        return require('../assets/profile5.jpg');
+      case 'profile6.jpg':
+        return require('../assets/profile6.jpg');
+      default:
+        return require('../assets/profile7.jpg'); // Image par défaut
     }
   };
 
@@ -68,9 +91,10 @@ const ProfilePage = () => {
 
         <Text style={styles.headerText}>Welcome!</Text>
 
+        {/* Affichage de l'image de profil */}
         <View style={styles.profileContainer}>
           {profileImage ? (
-            <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            <Image source={getLocalImage(profileImage)} style={styles.profileImage} />
           ) : (
             <Text style={styles.placeholderText}>Aucune image de profil</Text>
           )}
@@ -95,13 +119,13 @@ const ProfilePage = () => {
             <TouchableOpacity style={styles.closeButton} onPress={toggleMenu}>
               <Icon name="close" size={30} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert('Settings clicked')}>
+            <TouchableOpacity onPress={() => navigation.navigate('settings')}>
               <Text style={styles.menuItem}>Settings</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => alert('Edit Profile clicked')}>
               <Text style={styles.menuItem}>Edit Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert('Feedback clicked')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Feedback')}>
               <Text style={styles.menuItem}>Feedback</Text>
             </TouchableOpacity>
           </Animated.View>

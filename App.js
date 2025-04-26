@@ -1,29 +1,49 @@
 import React from 'react';
-import { SafeAreaView, Text, StyleSheet } from 'react-native';
-import Chatbot from './src/chatbot';
+import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, View } from 'react-native';
+import ProfilePictureSelector from './src/choosepic';
+import ProfilePage from './src/profile';
+import FeedbackPage from './src/feedback'; 
+import SettingsPage from './src/settings'; 
 
-const App = () => {
+const Stack = createStackNavigator();
+
+export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}></Text>
-      <Chatbot />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="ProfilePictureSelector">
+        <Stack.Screen
+          name="ProfilePictureSelector"
+          component={ProfilePictureSelector}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfilePage"
+          component={ProfilePage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Feedback"
+          component={FeedbackPage}  // Lien vers la page Feedback
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="settings"
+          component={SettingsPage}  // Lien vers la page Feedback
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
     backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color:'black',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export default App;
