@@ -171,11 +171,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 25,
     alignItems: 'center',
+    bottom: 40,
   },
   submitText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    
   },
   scoreContainer: {
     marginTop: 30,

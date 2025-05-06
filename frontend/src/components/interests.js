@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     position: "absolute",
-    bottom: 30,
+    bottom: 70,
     right: 30,
   },
   nextText: {

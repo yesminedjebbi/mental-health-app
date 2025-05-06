@@ -10,12 +10,10 @@ import {
   Animated,
   StatusBar,
   Platform,
-  ImageBackground,
   Pressable,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
@@ -23,7 +21,7 @@ const { width, height } = Dimensions.get('window');
 const ProfilePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { userId, imageUrl, username } = route.params;
+  const { userId, imageUrl, username,interests} = route.params;
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-width * 0.7)).current;
   const menuScaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -36,6 +34,9 @@ const ProfilePage = () => {
     followers: 2845,
     following: 426,
   };
+  
+  // Gradient colors
+  const gradientColors = ['#4A66DB', '#1E3A8A'];
 
   // Animation d'entrée du profil
   const profileOpacity = useRef(new Animated.Value(0)).current;
@@ -44,7 +45,7 @@ const ProfilePage = () => {
   // → redirige si pas d'image
   useEffect(() => {
     if (!imageUrl) {
-      navigation.replace('ChoosePic', { userId, username });
+      navigation.replace('ChoosePic', { userId, username,interests });
     }
     
     // Animation d'entrée
@@ -61,6 +62,9 @@ const ProfilePage = () => {
       })
     ]).start();
   }, [imageUrl]);
+  useEffect(() => {
+    console.log("Interests received in ProfilePage:", interests);
+  }, []);
 
   const toggleMenu = () => {
     if (isMenuVisible) {
@@ -153,22 +157,20 @@ const ProfilePage = () => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
-      {/* Image de fond avec dégradé */}
-      <ImageBackground
-        source={require('../../assets/background.jpg')}
-        style={styles.backgroundImage}
-      >
+      {/* Gradient background instead of image */}
+      <View style={styles.backgroundContainer}>
         <LinearGradient
-          colors={['rgba(95, 110, 240, 0.6)', 'rgba(40, 48, 128, 0.9)']}
+          colors={gradientColors}
           style={styles.gradient}
         />
-      </ImageBackground>
+      </View>
 
-      {/* Header avec bouton menu */}
+      {/* Header with menu button */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.menuBtn} onPress={toggleMenu}>
           <Icon name="menu" size={28} color="#fff" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity style={styles.notificationBtn}>
           <Icon name="notifications" size={24} color="#fff" />
           <View style={styles.notificationBadge} />
@@ -197,23 +199,13 @@ const ProfilePage = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Info utilisateur */}
+          {/* User info */}
           <Text style={styles.usernameText}>{username || 'User'}</Text>
-          <Text style={styles.userDescription}>Passionate photographer & traveler</Text>
-
-          {/* Statistiques */}
-          <View style={styles.statsContainer}>
-            <StatItem value={userStats.postsCount} label="Publications" />
-            <View style={styles.statDivider} />
-            <StatItem value={userStats.followers} label="Abonnés" />
-            <View style={styles.statDivider} />
-            <StatItem value={userStats.following} label="Abonnements" />
-          </View>
-
-          {/* Boutons d'action */}
+         
+          {/* Action buttons */}
           <View style={styles.actionBtnsRow}>
             <TouchableOpacity style={styles.primaryBtn}>
-              <Text style={styles.primaryBtnText}>Modifier le profil</Text>
+              <Text style={styles.primaryBtnText}>Edit Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryBtn}>
               <Icon name="share-social" size={20} color="#5F6EF0" />
@@ -221,31 +213,22 @@ const ProfilePage = () => {
           </View>
         </View>
 
-        {/* Sections supplémentaires */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>À propos de moi</Text>
-            <TouchableOpacity>
-              <Icon name="create-outline" size={20} color="#5F6EF0" />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.aboutText}>
-            Explorateur passionné, créateur de contenu et amateur de nouvelles technologies.
-            J'adore partager mes aventures et découvertes avec ma communauté !
-          </Text>
-        </View>
+       
 
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Mes intérêts</Text>
+            <Text style={styles.sectionTitle}>My interests</Text>
           </View>
           <View style={styles.interestsContainer}>
-            {['Photographie', 'Voyages', 'Cuisine', 'Tech'].map((item, index) => (
-              <View key={index} style={styles.interestTag}>
-                <Text style={styles.interestText}>{item}</Text>
-              </View>
-            ))}
-          </View>
+
+  {interests && interests.length > 0 ? (
+    interests.map((item, index) => (
+      <Text key={index} style={styles.interestItem}>• {item}</Text>
+    ))
+  ) : (
+    <Text style={styles.noInterests}>No interests found.</Text>
+  )}
+</View>
         </View>
       </Animated.View>
 
@@ -277,25 +260,24 @@ const ProfilePage = () => {
           />
           <View>
             <Text style={styles.menuUsername}>{username || 'User'}</Text>
-            <Text style={styles.menuEmail}>user@example.com</Text>
           </View>
         </View>
 
         <ScrollView style={styles.menuItems}>
-          <MenuItem icon="home" label="Accueil" onPress={() => navigation.navigate('Home', {userId})} />
-          <MenuItem icon="person" label="Mon profil" onPress={() => {toggleMenu()}} />
-          <MenuItem icon="settings" label="Paramètres" onPress={() => navigation.navigate('settings')} />
+          <MenuItem icon="home" label="Home" onPress={() => navigation.navigate('Home', {userId})} />
+          <MenuItem icon="person" label="My Profile" onPress={() => {toggleMenu()}} />
+          <MenuItem icon="settings" label="Settings" onPress={() => navigation.navigate('settings')} />
           <MenuItem icon="notifications" label="Notifications" onPress={() => alert('Notifications')} />
           <MenuItem icon="chatbubble-ellipses" label="Messages" onPress={() => alert('Messages')} />
-          <MenuItem icon="heart" label="Favoris" onPress={() => alert('Favoris')} />
-          <MenuItem icon="bookmark" label="Sauvegardés" onPress={() => alert('Sauvegardés')} />
-          <MenuItem icon="help-circle" label="Aide" onPress={() => alert('Aide')} />
+          <MenuItem icon="heart" label="Favorites" onPress={() => alert('Favorites')} />
+          <MenuItem icon="bookmark" label="Saved" onPress={() => alert('Saved')} />
+          <MenuItem icon="help-circle" label="Help" onPress={() => alert('Help')} />
           <MenuItem icon="chatbox" label="Feedback" onPress={() => navigation.navigate('feedback')} />
         </ScrollView>
 
-        <TouchableOpacity style={styles.logoutBtn}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.navigate('Login')}>
           <Icon name="log-out" size={20} color="#FF5A5A" />
-          <Text style={styles.logoutText}>Se déconnecter</Text>
+          <Text style={styles.logoutText}>Log out</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -307,8 +289,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
-  backgroundImage: {
-    height: height * 0.25,
+  backgroundContainer: {
+    height: height * 0.28,
     width: width,
     position: 'absolute',
     top: 0,
@@ -323,6 +305,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'ios' ? 50 : 40,
     paddingBottom: 20,
+    height: 90,
+    marginTop: 10,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   menuBtn: {
     width: 40,
@@ -482,22 +471,44 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#555',
   },
+  sectionCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sectionHeader: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    paddingBottom: 8,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
   interestsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
+    gap: 8, // React Native 0.71+ only; if earlier version, use marginBottom in child
   },
-  interestTag: {
-    backgroundColor: '#f0f2ff',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  interestItem: {
+    fontSize: 16,
+    color: '#555',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: '#f2f2f2',
     borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
+    alignSelf: 'flex-start',
   },
-  interestText: {
-    color: '#5F6EF0',
-    fontSize: 13,
-    fontWeight: '500',
+  noInterests: {
+    fontStyle: 'italic',
+    color: '#999',
   },
   menuBackdrop: {
     ...StyleSheet.absoluteFillObject,

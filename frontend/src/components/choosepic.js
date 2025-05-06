@@ -13,7 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const ProfilePictureSelector = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { userId, username } = route.params;
+  const { userId, username,interests } = route.params;
   const [selectedImage, setSelectedImage] = useState(null);
 
   const imageList = [
@@ -41,7 +41,8 @@ const ProfilePictureSelector = () => {
       navigation.replace('Profile', {
         userId,
         username,
-        imageUrl: selectedImage.name
+        imageUrl: selectedImage.name,
+        interests
       });
     } catch (e) {
       Alert.alert('Error', e.message);

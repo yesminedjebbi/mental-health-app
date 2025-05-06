@@ -47,7 +47,7 @@ const Chatbot = () => {
     setInputText('');
   
     try {
-      const response = await fetch('https://0c6a-34-85-205-81.ngrok-free.app/api/chatbot', {
+      const response = await fetch('https://d224-35-201-240-136.ngrok-free.app/api/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginBottom: 35,
+    top:40,
     color: '#333',
   },
   chatContainer: { flexGrow: 1, paddingBottom: 10 },
