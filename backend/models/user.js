@@ -6,11 +6,32 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   age: { type: Number, default: null },  // Par défaut null si non fourni
   gender: { type: String, default: "Non spécifié" },  
-  centre_d_interet: { type: [String], default: [] },  
-  mentalHealthHistory: { type: [String], default: [] },
+  interests: { type: [String], default: [],required: true},  
+  mentalHealth: {
+    type: Map,
+    of: Number,
+    required: false
+  },
   points: { type: Number, default: 0 },
   recompenses: { type: [String], default: [] },
-  dernierQuizDate: { type: Date, default: null },
+  historiqueEtatMental: [
+    {
+      date: {
+        type: Date,
+        required: true,
+        default: Date.now
+      },
+      etat: {
+        type: Map,
+        of: Number,
+        required: true
+      }
+    }
+  ],
+  profilePicture: {
+    type: String, 
+    default: '',
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

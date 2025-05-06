@@ -1,5 +1,6 @@
 const Question = require('../models/question');
 const Quiz=require('../models/quiz');
+const User=require('../models/user');
 const runModel=require('../python/runPython');
 
 const createQuiz=async (req,res)=>{
@@ -21,6 +22,19 @@ const createQuiz=async (req,res)=>{
         res.status(500).json({ message: "Erreur lors de la création du quiz", error });
     }
 };
+// const getResultHistory=async (req,res)=>{
+//       try{
+//         const {userId}=req.params;
+//         const quizzes = await Quiz.find({ userId })
+//         .sort({ date: 1 }) 
+//         .select('date result'); 
+
+//         res.status(200).json(quizzes);
+//       }catch(error){
+//         console.error("Erreur lors de la récupération de l'historique :", error);
+//         res.status(500).json({ message: "Erreur serveur" });
+//       }
+// };
 const getQuiz=async(req,res)=>{
   try{
     const {userId}=req.params;
@@ -51,7 +65,7 @@ const submitQuizAnswers = async (req, res) => {
       // Calculer le score basé sur les réponses
       let scores = await calculateScores(quiz.questions, answers);
       let customParams = await calculateCustomizationParameter(userId);
-      console.log(customParams);
+      console.log("customParams: ",customParams);
       let features = [...Object.values(scores), ...customParams];
       let reshapeFeatures = [features];
       console.log('Features envoyées au modèle (2D):', reshapeFeatures);
@@ -65,6 +79,18 @@ const submitQuizAnswers = async (req, res) => {
       quiz.scores = scores;
       quiz.result = predictionResult;
       await quiz.save();
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          mentalHealth: predictionResult,
+          $push: {
+            historiqueEtatMental: {
+              date: new Date(),
+              etat: predictionResult
+            }
+          }
+        }
+      );
   
       res.status(200).json({ message: "Réponses soumises avec succès", scores });
     } catch (error) {
@@ -119,27 +145,34 @@ async function calculateScores(questions, answers) {
     return 0; // Si la réponse est invalide
   };
   const calculateCustomizationParameter = async (userId) => {
-    const allresults = await Quiz.find({ userId });
+    const user = await User.findById(userId).select('historiqueEtatMental');
   
-    if (allresults.length === 0) return [0,0,0,0,0];
+    if (!user || user.historiqueEtatMental.length === 0) {
+      return [0, 0, 0, 0, 0];
+    }
   
     let Quizes = new Array(5).fill(0);
+    const historique = user.historiqueEtatMental;
   
-    allresults.forEach(quiz => {
-      if (!quiz.result || quiz.result.length === 0) return;
-      const result = Array.from(quiz.result.values()).map(parseFloat);
+    historique.forEach(entry => {
+      if (!entry.etat || entry.etat.size === 0) return;
+      
+      const result = Array.from(entry.etat.values()).map(parseFloat);
+  
       for (let i = 0; i < result.length; i++) {
         Quizes[i] += result[i] || 0;
       }
     });
   
+    // Calculer la moyenne
     for (let i = 0; i < Quizes.length; i++) {
-      Quizes[i] = Quizes[i] / allresults.length;
+      Quizes[i] = Quizes[i] / historique.length;
     }
   
     return Quizes;
-    
   };
+  
+ 
   
   
  module.exports={createQuiz,submitQuizAnswers,getQuiz,calculateCustomizationParameter};

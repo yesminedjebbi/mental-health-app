@@ -22,12 +22,23 @@ const signUp = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur", error });
     }
 };
-const getUsers = async (req, res) => {
+const getUserbyId = async (req, res) => {
     try {
-        const users = await User.find();
-        res.status(200).json(users);
+      const {userId}=req.params;
+        const user = await User.findById(userId);
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", error });
+    }
+};
+const getMentalHistory=async(req,res)=>{
+    try{
+           const {userId}=req.params;
+           const History=await User.findById(userId).select('historiqueEtatMental');
+           res.status(200).json(History);
+    }catch(error){
+      console.error("Erreur lors de la récupération de l'historique :", error);
+      res.status(500).json({ message: "Erreur serveur" });
     }
 };
 
@@ -52,4 +63,4 @@ const login = async (req, res) => {
   };
 
 // Exporter les fonctions du controller
-module.exports = { signUp, getUsers ,login};
+module.exports = { signUp, getUserbyId ,login,getMentalHistory};

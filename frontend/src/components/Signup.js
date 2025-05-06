@@ -5,7 +5,7 @@ import { Formik } from 'formik';
  import * as Yup from 'yup';
 import Checkbox from "expo-checkbox"; 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-const API_URL='http://192.168.1.5:5000/api/users/signup';
+const API_URL='http://192.168.1.6:5000/api/users/signup';
 
 
   // Schéma de validation avec Yup
@@ -30,7 +30,7 @@ export default function Signup({ navigation }) {
 
   const createQuiz = async (userId) => {
     try {
-      const response = await fetch('http://192.168.1.5:5000/api/quiz/', {
+      const response = await fetch('http://192.168.1.6:5000/api/quiz/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

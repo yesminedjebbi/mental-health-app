@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 
-export default function Quiz({ route }) {
+export default function Quiz({ route , navigation }) {
   const { userId } = route.params;
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -10,7 +10,7 @@ export default function Quiz({ route }) {
   useEffect(() => {
     async function fetchQuestions() {
       try {
-        const response = await fetch(`http://192.168.1.5:5000/api/quiz/${userId}`);
+        const response = await fetch(`http://192.168.1.6:5000/api/quiz/${userId}`);
         const data = await response.json();
         setQuestions(data.questions);
       } catch (error) {
@@ -31,7 +31,7 @@ export default function Quiz({ route }) {
     }
 
     try {
-      const response = await fetch('http://192.168.1.5:5000/api/quiz/submit', {
+      const response = await fetch('http://192.168.1.6:5000/api/quiz/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, answers }),
@@ -39,7 +39,9 @@ export default function Quiz({ route }) {
 
       const data = await response.json();
       setCategoryScores(data.scores);
-      Alert.alert("scores:", JSON.stringify(data.scores));
+      navigation.navigate("Home", { userId:userId });
+      // Alert.alert("scores:", JSON.stringify(data.scores));
+      
     } catch (error) {
       console.error("Erreur lors de la soumission", error);
     }
@@ -86,10 +88,10 @@ export default function Quiz({ route }) {
       )}
 
       <TouchableOpacity onPress={submitQuiz} style={styles.submitButton}>
-        <Text style={styles.submitText}>Submit</Text>
+        <Text style={styles.submitText} >Submit</Text>
       </TouchableOpacity>
 
-      {categoryScores && (
+      {/* {categoryScores && (
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreTitle}>📊 scores :</Text>
           {Object.entries(categoryScores).map(([category, score]) => (
@@ -98,7 +100,7 @@ export default function Quiz({ route }) {
             </Text>
           ))}
         </View>
-      )} 
+      )}  */}
       
     </ScrollView>
   );

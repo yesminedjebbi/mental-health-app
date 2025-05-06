@@ -13,7 +13,7 @@ const SignIn = ({ navigation }) => {
     }
   
     try {
-      const response = await fetch('http://192.168.1.5:5000/api/users/login', {
+      const response = await fetch('http://192.168.1.6:5000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -23,7 +23,7 @@ const SignIn = ({ navigation }) => {
       Alert.alert('Response', JSON.stringify(data.user._id, null, 2));
       if (response.ok) {
         // Assuming your backend returns a token when successful
-        navigation.navigate("Quiz", { userId: data.user._id }); 
+        navigation.navigate("InterestPage", { userId: data.user._id }); 
       } else {
         Alert.alert('Error', data.message || 'Login failed');
       }
